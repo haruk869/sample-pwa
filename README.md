@@ -8,6 +8,24 @@ https://haruk869.github.io/sample-pwa/
 
 ![QR Code](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://haruk869.github.io/sample-pwa/?source=qr)
 
+---
+
+### Why PWA?
+
+**アプリストア不要。QRコードひとつで、即座に配布。**
+
+PWA（Progressive Web App）は、Web 技術でネイティブアプリのような体験を実現します。
+
+- **インストールが簡単** — ストア申請なし、QR コードをスキャンするだけ
+- **アップデートは瞬時** — push したら即反映、ユーザーの操作不要
+- **オフライン対応** — Service Worker がアセットをキャッシュ
+- **クロスプラットフォーム** — iOS / Android / PC、すべて同じコードベース
+
+このサンプルは **GitHub Pages（静的ホスティング）だけ**で動作します。サーバーサイド処理は一切不要。
+React + Next.js という既存の Web 技術スタックのまま活用し、特別なフレームワーク等なしで PWA として構築できることを示しています。
+
+---
+
 ## 作成要件
 
 - PWA の基本機能をシンプルに実装したサンプル
@@ -102,5 +120,6 @@ npm run build
 ## デプロイ
 
 `main` ブランチへの push で GitHub Actions が自動デプロイを実行します。
+インストール済みアプリは次回起動時に自動更新されます（Service Worker の stale-while-revalidate 戦略）。
 
 出力先: `out/` → GitHub Pages
