@@ -53,6 +53,7 @@ export default function HomePage() {
     windSpeed: number;
   } | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
+  const [address, setAddress] = useState<string>("");
 
   useEffect(() => {
     // Register service worker
@@ -125,15 +126,27 @@ export default function HomePage() {
           setLocation({ lat: latitude, lon: longitude });
 
           try {
-            const res = await fetch(
+            // 天気情報取得
+            const weatherRes = await fetch(
               `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
             );
-            const data = await res.json();
+            const weatherData = await weatherRes.json();
             setWeather({
-              temperature: data.current_weather.temperature,
-              weatherCode: data.current_weather.weathercode,
-              windSpeed: data.current_weather.windspeed,
+              temperature: weatherData.current_weather.temperature,
+              weatherCode: weatherData.current_weather.weathercode,
+              windSpeed: weatherData.current_weather.windspeed,
             });
+
+            // 住所取得（Nominatim）
+            const addressRes = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=ja`,
+              { headers: { "User-Agent": "SamplePWA/1.0" } }
+            );
+            const addressData = await addressRes.json();
+            if (addressData.address) {
+              const { city, town, village, suburb, county } = addressData.address;
+              setAddress(city || town || village || suburb || county || "");
+            }
           } catch {
             setLocationError("天気情報を取得できません");
           }
@@ -238,6 +251,9 @@ export default function HomePage() {
               <div className="text-center text-slate-400 py-4">{locationError}</div>
             ) : weather ? (
               <div className="text-center">
+                {address && (
+                  <div className="text-slate-300 text-sm mb-3">{address}</div>
+                )}
                 <div className="text-5xl mb-2">
                   {getWeatherInfo(weather.weatherCode).emoji}
                 </div>
@@ -338,6 +354,9 @@ export default function HomePage() {
               <div className="text-center text-slate-400 py-4">{locationError}</div>
             ) : weather ? (
               <div className="text-center">
+                {address && (
+                  <div className="text-slate-300 text-sm mb-3">{address}</div>
+                )}
                 <div className="text-5xl mb-2">
                   {getWeatherInfo(weather.weatherCode).emoji}
                 </div>
