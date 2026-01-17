@@ -18,6 +18,19 @@ function getIOSVersion(): number | null {
   return null;
 }
 
+// WMO Weather Code を絵文字と説明に変換
+function getWeatherInfo(code: number): { emoji: string; description: string } {
+  if (code === 0) return { emoji: "☀️", description: "晴れ" };
+  if (code <= 3) return { emoji: "⛅", description: "曇り" };
+  if (code <= 48) return { emoji: "🌫️", description: "霧" };
+  if (code <= 55) return { emoji: "🌧️", description: "霧雨" };
+  if (code <= 65) return { emoji: "🌧️", description: "雨" };
+  if (code <= 77) return { emoji: "❄️", description: "雪" };
+  if (code <= 82) return { emoji: "🌧️", description: "にわか雨" };
+  if (code <= 86) return { emoji: "❄️", description: "にわか雪" };
+  return { emoji: "⛈️", description: "雷雨" };
+}
+
 export default function HomePage() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -30,6 +43,16 @@ export default function HomePage() {
   const [showInstallSheet, setShowInstallSheet] = useState(false);
   const [count, setCount] = useState(0);
   const [time, setTime] = useState<string>("");
+  const [location, setLocation] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
+  const [locationError, setLocationError] = useState<string>("");
+  const [weather, setWeather] = useState<{
+    temperature: number;
+    weatherCode: number;
+    windSpeed: number;
+  } | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
 
   useEffect(() => {
     // Register service worker
@@ -93,6 +116,38 @@ export default function HomePage() {
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
+
+    // Geolocation & Weather
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ lat: latitude, lon: longitude });
+
+          try {
+            const res = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+            );
+            const data = await res.json();
+            setWeather({
+              temperature: data.current_weather.temperature,
+              weatherCode: data.current_weather.weathercode,
+              windSpeed: data.current_weather.windspeed,
+            });
+          } catch {
+            setLocationError("天気情報を取得できません");
+          }
+          setWeatherLoading(false);
+        },
+        () => {
+          setLocationError("位置情報を取得できません");
+          setWeatherLoading(false);
+        }
+      );
+    } else {
+      setLocationError("位置情報非対応");
+      setWeatherLoading(false);
+    }
 
     return () => {
       window.removeEventListener(
@@ -171,49 +226,77 @@ export default function HomePage() {
         </header>
 
         {/* App Content */}
-        <main className="flex-1 flex flex-col items-center justify-center gap-8 p-4">
-          <div className="bg-slate-800/50 rounded-3xl p-8 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
-            <h2 className="text-slate-400 text-center mb-6 text-sm uppercase tracking-wider">
+        <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
+          {/* Weather Card */}
+          <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+            <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">
+              Weather
+            </h2>
+            {weatherLoading ? (
+              <div className="text-center text-slate-400 py-4">読み込み中...</div>
+            ) : locationError ? (
+              <div className="text-center text-slate-400 py-4">{locationError}</div>
+            ) : weather ? (
+              <div className="text-center">
+                <div className="text-5xl mb-2">
+                  {getWeatherInfo(weather.weatherCode).emoji}
+                </div>
+                <div className="text-4xl font-bold text-white mb-1">
+                  {weather.temperature}°C
+                </div>
+                <div className="text-slate-400 text-sm mb-2">
+                  {getWeatherInfo(weather.weatherCode).description}
+                </div>
+                <div className="text-slate-500 text-xs">
+                  風速 {weather.windSpeed} km/h
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Counter Card */}
+          <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+            <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">
               Counter
             </h2>
-            <div className="text-7xl font-bold text-white text-center mb-8 font-mono">
+            <div className="text-5xl font-bold text-white text-center mb-6 font-mono">
               {count}
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <button
                 onClick={() => setCount((c) => c - 1)}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 rounded-xl text-2xl transition-all duration-200 active:scale-95"
+                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-xl text-xl transition-all duration-200 active:scale-95"
               >
                 -
               </button>
               <button
                 onClick={() => setCount(0)}
-                className="px-6 bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 font-semibold py-4 rounded-xl transition-all duration-200 active:scale-95"
+                className="px-4 bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 font-semibold py-3 rounded-xl transition-all duration-200 active:scale-95"
               >
                 Reset
               </button>
               <button
                 onClick={() => setCount((c) => c + 1)}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-4 rounded-xl text-2xl transition-all duration-200 active:scale-95"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl text-xl transition-all duration-200 active:scale-95"
               >
                 +
               </button>
             </div>
           </div>
 
-          <div className="bg-slate-800/30 rounded-2xl p-6 backdrop-blur-sm border border-slate-700/30 w-full max-w-sm">
-            <h3 className="text-slate-400 text-sm mb-4">PWA Features</h3>
-            <ul className="space-y-3 text-slate-300 text-sm">
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+          <div className="bg-slate-800/30 rounded-2xl p-4 backdrop-blur-sm border border-slate-700/30 w-full max-w-sm">
+            <h3 className="text-slate-400 text-xs mb-3">PWA Features</h3>
+            <ul className="space-y-2 text-slate-300 text-xs">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 Installed on device
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 Works offline
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 Standalone app experience
               </li>
             </ul>
@@ -244,48 +327,76 @@ export default function HomePage() {
 
         {/* App Content */}
         <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
-          <div className="bg-slate-800/50 rounded-3xl p-8 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
-            <h2 className="text-slate-400 text-center mb-6 text-sm uppercase tracking-wider">
+          {/* Weather Card */}
+          <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+            <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">
+              Weather
+            </h2>
+            {weatherLoading ? (
+              <div className="text-center text-slate-400 py-4">読み込み中...</div>
+            ) : locationError ? (
+              <div className="text-center text-slate-400 py-4">{locationError}</div>
+            ) : weather ? (
+              <div className="text-center">
+                <div className="text-5xl mb-2">
+                  {getWeatherInfo(weather.weatherCode).emoji}
+                </div>
+                <div className="text-4xl font-bold text-white mb-1">
+                  {weather.temperature}°C
+                </div>
+                <div className="text-slate-400 text-sm mb-2">
+                  {getWeatherInfo(weather.weatherCode).description}
+                </div>
+                <div className="text-slate-500 text-xs">
+                  風速 {weather.windSpeed} km/h
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Counter Card */}
+          <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+            <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">
               Counter
             </h2>
-            <div className="text-7xl font-bold text-white text-center mb-8 font-mono">
+            <div className="text-5xl font-bold text-white text-center mb-6 font-mono">
               {count}
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <button
                 onClick={() => setCount((c) => c - 1)}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 rounded-xl text-2xl transition-all duration-200 active:scale-95"
+                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-xl text-xl transition-all duration-200 active:scale-95"
               >
                 -
               </button>
               <button
                 onClick={() => setCount(0)}
-                className="px-6 bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 font-semibold py-4 rounded-xl transition-all duration-200 active:scale-95"
+                className="px-4 bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 font-semibold py-3 rounded-xl transition-all duration-200 active:scale-95"
               >
                 Reset
               </button>
               <button
                 onClick={() => setCount((c) => c + 1)}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-4 rounded-xl text-2xl transition-all duration-200 active:scale-95"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl text-xl transition-all duration-200 active:scale-95"
               >
                 +
               </button>
             </div>
           </div>
 
-          <div className="bg-slate-800/30 rounded-2xl p-6 backdrop-blur-sm border border-slate-700/30 w-full max-w-sm">
-            <h3 className="text-slate-400 text-sm mb-4">PWA Features</h3>
-            <ul className="space-y-3 text-slate-300 text-sm">
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+          <div className="bg-slate-800/30 rounded-2xl p-4 backdrop-blur-sm border border-slate-700/30 w-full max-w-sm">
+            <h3 className="text-slate-400 text-xs mb-3">PWA Features</h3>
+            <ul className="space-y-2 text-slate-300 text-xs">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
                 Installable on device
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 Works offline
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
                 Browser mode
               </li>
             </ul>
