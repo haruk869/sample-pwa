@@ -1,6 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// SSR を無効にして Map をインポート
+const Map = dynamic(() => import("@/components/Map"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[200px] w-full rounded-2xl bg-slate-700/50 flex items-center justify-center text-slate-400">
+      地図を読み込み中...
+    </div>
+  ),
+});
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -240,6 +251,16 @@ export default function HomePage() {
 
         {/* App Content */}
         <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
+          {/* Map Card */}
+          {location && (
+            <div className="bg-slate-800/50 rounded-3xl p-4 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+              <h2 className="text-slate-400 text-center mb-3 text-sm uppercase tracking-wider">
+                Location
+              </h2>
+              <Map lat={location.lat} lon={location.lon} address={address} />
+            </div>
+          )}
+
           {/* Weather Card */}
           <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
             <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">
@@ -343,6 +364,16 @@ export default function HomePage() {
 
         {/* App Content */}
         <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
+          {/* Map Card */}
+          {location && (
+            <div className="bg-slate-800/50 rounded-3xl p-4 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
+              <h2 className="text-slate-400 text-center mb-3 text-sm uppercase tracking-wider">
+                Location
+              </h2>
+              <Map lat={location.lat} lon={location.lon} address={address} />
+            </div>
+          )}
+
           {/* Weather Card */}
           <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 w-full max-w-sm">
             <h2 className="text-slate-400 text-center mb-4 text-sm uppercase tracking-wider">

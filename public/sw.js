@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sample-pwa-v5';
+const CACHE_NAME = 'sample-pwa-v6';
 const BASE_PATH = '/sample-pwa';
 
 // 初期キャッシュ対象
