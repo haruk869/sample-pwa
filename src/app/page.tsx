@@ -379,28 +379,27 @@ export default function HomePage() {
 
         {/* App Info */}
         <h1 className="text-4xl font-bold text-white mb-2">Sample PWA</h1>
-        <p className="text-slate-400 mb-2">Progressive Web App Demo</p>
-        <p className="text-slate-500 text-sm mb-8">Version 1.0.0 • Anthropic</p>
+        <p className="text-slate-400 mb-8">Progressive Web App Demo</p>
 
-        {/* Install Button for PC */}
-        {isInstallable ? (
+        {/* PC Install Section */}
+        <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 mb-6">
+          <p className="text-slate-300 text-sm mb-4">PC（Chrome / Edge）</p>
           <button
             onClick={handleInstall}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 mb-6"
+            disabled={!isInstallable}
+            className={`w-full font-semibold py-4 px-8 rounded-2xl text-lg transition-all duration-200 ${
+              isInstallable
+                ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50"
+                : "bg-slate-700 text-slate-400 cursor-not-allowed"
+            }`}
           >
-            インストール
+            {isInstallable ? "インストール" : "インストール（Chrome/Edge で開いてください）"}
           </button>
-        ) : (
-          <div className="bg-slate-800/50 rounded-2xl p-4 mb-6 border border-slate-700/50">
-            <p className="text-slate-400 text-sm">
-              Chrome または Edge でインストール可能
-            </p>
-          </div>
-        )}
+        </div>
 
-        {/* QR Code Section */}
+        {/* QR Code Section for iPhone */}
         <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50">
-          <p className="text-slate-300 text-sm mb-4">スマートフォンでインストール</p>
+          <p className="text-slate-300 text-sm mb-4">iPhone / Android はこちら</p>
           <div className="bg-white p-3 rounded-2xl inline-block mb-4">
             <img
               src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https://haruk869.github.io/sample-pwa/?source=qr"
@@ -411,25 +410,6 @@ export default function HomePage() {
             />
           </div>
           <p className="text-slate-500 text-xs">カメラでQRコードをスキャン</p>
-        </div>
-
-        {/* Features */}
-        <div className="mt-8 text-left">
-          <h3 className="text-slate-400 text-xs uppercase tracking-wider mb-4">Features</h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-slate-300 text-sm">
-              <span className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">📱</span>
-              ホーム画面にインストール可能
-            </div>
-            <div className="flex items-center gap-3 text-slate-300 text-sm">
-              <span className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">📡</span>
-              オフラインでも動作
-            </div>
-            <div className="flex items-center gap-3 text-slate-300 text-sm">
-              <span className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">🚀</span>
-              ネイティブアプリのような体験
-            </div>
-          </div>
         </div>
       </div>
     </div>
