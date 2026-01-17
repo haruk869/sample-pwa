@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -75,39 +76,41 @@ export default function DownloadPage() {
         {isInstalled ? (
           <div className="space-y-4">
             <p className="text-green-400 mb-4">Installed!</p>
-            <a
-              href="/sample-pwa/app"
+            <Link
+              href="/app"
               className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-12 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50"
             >
               Open App
-            </a>
-          </div>
-        ) : isInstallable ? (
-          <button
-            onClick={handleInstall}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-12 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105"
-          >
-            Install App
-          </button>
-        ) : isIOS ? (
-          <div className="bg-slate-800/50 rounded-2xl p-6 max-w-sm mx-auto">
-            <p className="text-slate-300 mb-4">To install on iOS:</p>
-            <ol className="text-slate-400 text-left space-y-2">
-              <li>1. Tap the Share button</li>
-              <li>2. Select &quot;Add to Home Screen&quot;</li>
-            </ol>
+            </Link>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-slate-400 mb-4">
-              Open in Chrome or Edge to install
-            </p>
-            <a
-              href="/sample-pwa/app"
+            {isInstallable ? (
+              <button
+                onClick={handleInstall}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-12 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105"
+              >
+                Install App
+              </button>
+            ) : isIOS ? (
+              <div className="bg-slate-800/50 rounded-2xl p-6 max-w-sm mx-auto">
+                <p className="text-slate-300 mb-4">To install on iOS:</p>
+                <ol className="text-slate-400 text-left space-y-2">
+                  <li>1. Tap the Share button</li>
+                  <li>2. Select &quot;Add to Home Screen&quot;</li>
+                </ol>
+              </div>
+            ) : (
+              <p className="text-slate-400 mb-4">
+                Open in Chrome or Edge to install
+              </p>
+            )}
+            <Link
+              href="/app"
               className="inline-block bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 px-12 rounded-2xl text-lg transition-all duration-200"
             >
               Try Web Version
-            </a>
+            </Link>
           </div>
         )}
       </div>

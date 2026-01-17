@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function AppPage() {
   const [count, setCount] = useState(0);
@@ -93,12 +94,12 @@ export default function AppPage() {
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-slate-900/80 backdrop-blur-sm border-t border-slate-800 p-4">
         <div className="max-w-lg mx-auto">
-          <a
-            href="/sample-pwa/"
+          <Link
+            href="/"
             className="block text-center text-slate-400 hover:text-slate-300 transition-colors"
           >
             Back to Download Page
-          </a>
+          </Link>
         </div>
       </footer>
     </div>
