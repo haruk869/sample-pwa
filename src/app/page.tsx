@@ -26,11 +26,20 @@ export default function DownloadPage() {
       setIsInstalled(true);
     }
 
-    // Check if iOS
+    // Check if iOS (Safari)
     const isIOSDevice =
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
       (navigator.userAgent.includes("Mac") && "ontouchend" in document);
     setIsIOS(isIOSDevice);
+
+    // Debug: iOS判定をコンソールに出力
+    console.log("iOS detection:", {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      maxTouchPoints: navigator.maxTouchPoints,
+      isIOSDevice,
+    });
 
     // Listen for install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
