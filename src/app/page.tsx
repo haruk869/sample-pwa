@@ -392,10 +392,9 @@ export default function HomePage() {
               インストール
             </button>
           ) : (
-            <div className="text-slate-400 text-sm">
-              <p className="mb-2">アドレスバー右側の <span className="inline-block px-2 py-0.5 bg-slate-700 rounded">⊕</span> をクリック</p>
-              <p className="text-slate-500 text-xs">または「︙」→「アプリをインストール」</p>
-            </div>
+            <p className="text-slate-400 text-sm">
+              ブラウザメニュー「︙」→「保存と共有」→「ショートカットを作成」
+            </p>
           )}
         </div>
 
