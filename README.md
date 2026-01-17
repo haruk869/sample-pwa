@@ -6,6 +6,8 @@ Next.js で構築した PWA（Progressive Web App）のサンプルアプリケ�
 
 https://haruk869.github.io/sample-pwa/
 
+![QR Code](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://haruk869.github.io/sample-pwa/)
+
 ## 作成要件
 
 - PWA の基本機能をシンプルに実装したサンプル
