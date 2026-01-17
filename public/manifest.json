@@ -2,7 +2,7 @@
   "name": "Sample PWA App",
   "short_name": "Sample PWA",
   "description": "A sample Progressive Web App built with Next.js",
-  "start_url": "/sample-pwa/app",
+  "start_url": "/sample-pwa/?source=installed",
   "scope": "/sample-pwa/",
   "display": "standalone",
   "background_color": "#1a1a2e",

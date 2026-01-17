@@ -1,10 +1,11 @@
-const CACHE_NAME = 'sample-pwa-v2';
+const CACHE_NAME = 'sample-pwa-v3';
 const BASE_PATH = '/sample-pwa';
 
 // 初期キャッシュ対象
 const urlsToCache = [
   `${BASE_PATH}/`,
-  `${BASE_PATH}/app/`,
+  `${BASE_PATH}/?source=installed`,
+  `${BASE_PATH}/?source=qr`,
   `${BASE_PATH}/manifest.json`,
   `${BASE_PATH}/icons/icon-192.png`,
   `${BASE_PATH}/icons/icon-512.png`
