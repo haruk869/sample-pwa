@@ -384,17 +384,19 @@ export default function HomePage() {
         {/* PC Install Section */}
         <div className="bg-slate-800/50 rounded-3xl p-6 backdrop-blur-sm border border-slate-700/50 mb-6">
           <p className="text-slate-300 text-sm mb-4">PC（Chrome / Edge）</p>
-          <button
-            onClick={handleInstall}
-            disabled={!isInstallable}
-            className={`w-full font-semibold py-4 px-8 rounded-2xl text-lg transition-all duration-200 ${
-              isInstallable
-                ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50"
-                : "bg-slate-700 text-slate-400 cursor-not-allowed"
-            }`}
-          >
-            {isInstallable ? "インストール" : "インストール（Chrome/Edge で開いてください）"}
-          </button>
+          {isInstallable ? (
+            <button
+              onClick={handleInstall}
+              className="w-full font-semibold py-4 px-8 rounded-2xl text-lg transition-all duration-200 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50"
+            >
+              インストール
+            </button>
+          ) : (
+            <div className="text-slate-400 text-sm">
+              <p className="mb-2">アドレスバー右側の <span className="inline-block px-2 py-0.5 bg-slate-700 rounded">⊕</span> をクリック</p>
+              <p className="text-slate-500 text-xs">または「︙」→「アプリをインストール」</p>
+            </div>
+          )}
         </div>
 
         {/* QR Code Section for iPhone */}
