@@ -1,36 +1,42 @@
-# このリポジトリ
+# sample-pwa
 
-## 概要
-PWAサンプルアプリ（Next.js）
-
-## URL
-- GitHub: https://github.com/haruk869/sample-pwa
-- Pages: https://haruk869.github.io/sample-pwa/
-
-## 構成
-- `/` - 統合ページ（PC: DL画面 / モバイル: アプリ + シート）
-- PWA: manifest.json, sw.js, icons, screenshots
-
-## スキルセット
-vercel-react-best-practices 適用済
+PWA sample app (Next.js). GitHub Pages: https://haruk869.github.io/sample-pwa/
 
 ---
 
-# PWA 作成要点
+# Base rules
 
-## manifest.json
+- Response/docs: Japanese (follow original language if non-Japanese)
+- .claude/ content: English, minimal, no decoration. Add notes only when ambiguous
+- Plans, skills: .claude/ (in repo)
+- No write outside repo without confirmation
 
-### icons の purpose
-- `"purpose": "any maskable"` は非推奨
-- `any` と `maskable` は別エントリで定義する
+---
+
+# This repo only
+
+## Structure
+- `/` - Unified page (PC: download / mobile: app + sheet)
+- PWA: manifest.json, sw.js, icons, screenshots
+
+## Skill set
+vercel-react-best-practices applied
+
+## PWA notes
+
+### manifest.json
+
+#### icons purpose
+- `"purpose": "any maskable"` is deprecated
+- Define `any` and `maskable` as separate entries
 ```json
 { "src": "icon.png", "purpose": "any" },
 { "src": "icon.png", "purpose": "maskable" }
 ```
 
-### screenshots（PC インストール UI 用）
-- PC で Chrome のリッチなインストール UI を表示するには `form_factor: "wide"` のスクリーンショットが必須
-- モバイル用は `form_factor: "narrow"`
+#### screenshots (for PC install UI)
+- PC Chrome rich install UI requires `form_factor: "wide"` screenshot
+- Mobile uses `form_factor: "narrow"`
 ```json
 "screenshots": [
   { "src": "desktop.png", "sizes": "1280x720", "form_factor": "wide" },
@@ -38,57 +44,57 @@ vercel-react-best-practices 適用済
 ]
 ```
 
-## beforeinstallprompt イベント
+### beforeinstallprompt event
 
-### 発火条件（Chrome）
+#### Trigger conditions (Chrome)
 - HTTPS
-- 有効な manifest.json
-- Service Worker 登録済み
-- 未インストール（ブラウザが記憶）
-- エンゲージメント要件を満たす
+- Valid manifest.json
+- Service Worker registered
+- Not installed (browser remembers)
+- Engagement requirements met
 
-### インストール状態のリセット
-- Clear site data だけでは不十分
-- Chrome: アドレスバー → サイト設定 → アンインストール
-- または chrome://apps からアンインストール
+#### Reset install state
+- Clear site data alone is insufficient
+- Chrome: address bar → site settings → uninstall
+- Or uninstall from chrome://apps
 
-## iOS の制限
+### iOS limitations
 
-### beforeinstallprompt 非対応
-- Safari は `beforeinstallprompt` をサポートしない
-- ワンボタンインストール不可
-- 「共有 → ホーム画面に追加」の手順案内が必要
+#### beforeinstallprompt not supported
+- Safari does not support `beforeinstallprompt`
+- One-button install not possible
+- Need to guide "Share → Add to Home Screen"
 
-### iOS バージョン判定
+#### iOS version detection
 ```javascript
 const match = navigator.userAgent.match(/OS (\d+)_/);
 const version = match ? parseInt(match[1], 10) : null;
 ```
-- iOS 26+: 右下「•••」メニューから追加
-- iOS 26未満: 下部「共有ボタン」から追加
+- iOS 26+: add from "•••" menu (bottom right)
+- iOS <26: add from share button (bottom)
 
-## Service Worker
+### Service Worker
 
-### キャッシュ対象
-- HTML だけでなく JS/CSS アセット（`_next/static/`）もキャッシュ必須
-- 2回目起動時にオフラインで動作しない原因になる
+#### Cache targets
+- Cache JS/CSS assets (`_next/static/`) not just HTML
+- Causes offline failure on second launch otherwise
 
-### キャッシュ戦略
-- stale-while-revalidate が推奨
-- キャッシュを即返しつつ、バックグラウンドで更新
+#### Cache strategy
+- stale-while-revalidate recommended
+- Return cache immediately, update in background
 
-## Next.js + GitHub Pages
+### Next.js + GitHub Pages
 
-### basePath 設定
-- `next.config.ts` で `basePath: "/repo-name"` 設定
-- ハードコードした `href="/repo-name/..."` は避ける
-- `next/link` の `Link` を使えば basePath は自動付与
+#### basePath setting
+- Set `basePath: "/repo-name"` in `next.config.ts`
+- Avoid hardcoded `href="/repo-name/..."`
+- `next/link` auto-applies basePath
 
-### 静的エクスポート
-- `output: "export"` でビルド
-- `out/` ディレクトリを GitHub Pages にデプロイ
+#### Static export
+- Build with `output: "export"`
+- Deploy `out/` directory to GitHub Pages
 
-## URL パラメータによる状態管理
-- `?source=installed` - manifest の start_url に設定
-- `?source=qr` - QR コードからのアクセス識別
-- `display-mode: standalone` - インストール済み判定
+### URL parameter state
+- `?source=installed` - set in manifest start_url
+- `?source=qr` - identify QR code access
+- `display-mode: standalone` - detect installed state
